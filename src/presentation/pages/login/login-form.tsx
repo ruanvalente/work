@@ -1,14 +1,17 @@
-'use client'
+"use client";
 
-import { useState } from "react";
 import { LoginUseCase } from "@/application/useCases/login.use-case";
 import { AuthApiAdapter } from "@/infrastructure/adapters/auth/auth-api.adapter";
+import { useForm } from "@/presentation/hooks/use-form";
+import { Condition } from "@/presentation/ui/condition";
+import { isFieldFilled } from "@/shared/utils/validations/is-field-filled";
 
-export const LoginForm: React.FC = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+
+export function LoginForm () {
+  const { values, errors, setError, handleChange, handleBlur } = useForm({
+    username: "",
+    password: "",
+  });
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,13 +19,15 @@ export const LoginForm: React.FC = () => {
     const loginUseCase = new LoginUseCase(authAdapter);
 
     try {
+      const { username, password } = values;
       const token = await loginUseCase.execute(username, password);
-      setSuccess(`Login successful! Token: ${token}`);
-      setError('');
+      if (token) {
+        console.log(`Login successful! Token: ${token}`);
+      }
     } catch (error) {
-      console.log('error', error)
-      setError('');
-      setSuccess('');
+      console.log("error", error);
+      setError("username", "username is invalid");
+      setError("username", "password is invalid");
     }
   };
 
@@ -32,8 +37,9 @@ export const LoginForm: React.FC = () => {
         <label>Username:</label>
         <input
           type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          value={values.username}
+          onChange={handleChange}
+          onBlur={handleBlur}
           required
         />
       </div>
@@ -41,15 +47,20 @@ export const LoginForm: React.FC = () => {
         <label>Password:</label>
         <input
           type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={values.password}
+          onChange={handleChange}
+          onBlur={handleBlur}
           required
         />
       </div>
       <button type="submit">Login</button>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {success && <p style={{ color: 'green' }}>{success}</p>}
+      <Condition when={isFieldFilled(errors, "username")}>
+        <p style={{ color: "red" }}>{errors.username}</p>
+      </Condition>
+      <Condition when={isFieldFilled(errors, "password")}>
+        <p style={{ color: "red" }}>{errors.password}</p>
+      </Condition>
     </form>
   );
-};
+}
 
