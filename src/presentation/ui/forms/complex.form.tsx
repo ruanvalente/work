@@ -1,6 +1,8 @@
 "use client";
 
 import { useForm } from "@/presentation/hooks/use-form";
+import { Condition } from "../condition";
+import { isFieldFilled } from "@/shared/utils/validations/is-field-filled";
 
 export const ComplexForm: React.FC = () => {
   const { values, errors, handleChange, setError, clearErrors, resetForm, handleBlur } =
@@ -45,9 +47,9 @@ export const ComplexForm: React.FC = () => {
           } focus:outline-none focus:ring-2 focus:ring-gray-500`}
           placeholder="Enter your username"
         />
-        {errors?.username && (
+        <Condition when={isFieldFilled(errors, 'username')}>
           <p className="text-red-500 text-sm">{errors.username}</p>
-        )}
+        </Condition>
       </div>
 
       {/* Password */}
@@ -63,9 +65,9 @@ export const ComplexForm: React.FC = () => {
           } focus:outline-none focus:ring-2 focus:ring-zinc-500`}
           placeholder="Enter your password"
         />
-        {errors?.password && (
+        <Condition when={isFieldFilled(errors, 'password')}>
           <p className="text-red-500 text-sm">{errors.password}</p>
-        )}
+        </Condition>
       </div>
 
       {/* Remember Me */}
