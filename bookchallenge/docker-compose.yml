@@ -1,0 +1,9 @@
+services:
+  mysql:
+    container_name: 'bookchallenge-java'
+    image: 'docker.io/library/mysql:latest'
+    environment:
+      - 'MYSQL_DATABASE=bookchallenge-java'
+      - 'MYSQL_ROOT_PASSWORD=1234'
+    ports:
+      - '3306:3306'
